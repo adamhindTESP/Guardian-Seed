@@ -176,3 +176,6 @@ A numerical GO indicates the guardian prior *can* persist under defined conditio
 **Contact**: Open Issues for discussion. **No private claims**—everything gated and public.
 
 ---
+
+![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)
+
