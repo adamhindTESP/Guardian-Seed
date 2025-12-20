@@ -95,7 +95,9 @@ See `/sim/monte_carlo_prior_persistence.py` for implementation and results.
 
 ## Phase Diagram (Safety Map)
 
-python monte_carlo_prior_persistence.py –phase-diagram
+python 
+prior_persistence_sim.py
+–phase-diagram
 
 
 ![Phase Diagram](results/v1.1/phase_diagram.png)
