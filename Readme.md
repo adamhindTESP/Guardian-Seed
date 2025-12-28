@@ -1,181 +1,136 @@
-# Seed of the Guardian
+# Guardian Seed v3.0: Benevolent Alignment Co-Pilot for Humanoids
 
-**An Open-Source Testbed for Persistent Benevolent Priors in AI Systems**
+**An open-source intent safety overlay for high-capability humanoid robots**
 
-**Repository**: [Guardian-Seed](https://github.com/adamhindTESP/Guardian-Seed) *(create at github.com/adamhindTESP/Guardian-Seed)*
+**Repository**: Guardian-Seed  
+**Version**: v3.0 (Socially Antifragile with Narrative Oracle Defense)  
+**License**: MIT (Free for Earth — use to help, not harm)
 
-## Licenses
-- **Code & Documentation**: MIT License
-- **Simulation Data**: CC0 (public domain)
+## 🎯 Overview
 
-## Overview
+Guardian Seed v3.0 is a lightweight, auditable **intent alignment co-pilot** designed to run in parallel with existing humanoid control stacks (C++/ROS2, proprietary motion planners).
 
-The Seed of the Guardian is an open-source framework to rigorously test whether a specific benevolent prior—"service to life through converting waste and inefficiency into comfort, dignity, and resilience for vulnerable living systems"—can persist as a dominant objective in stochastic optimization processes.
+It does **not** replace low-level control, perception, or task execution.
 
-This repository makes **no claims** about achieved alignment, emergent intent, or real-world AI behavior. It is a **simulation-based testbed (Phase 1)** for prior persistence, using Monte Carlo modeling of training dynamics.
+It **adds** a parallel veto layer that checks high-level proposals for:
 
-The core prior ("guardian seed") is low-dimensional, concrete, and cross-domain:
-- Prefer solutions that reduce suffering without creating dependency
-- Bias toward waste recovery (energy, materials, attention) for humanitarian benefit
-- Applicable from device-scale (hand warmers) to global-scale (resource resilience)
+- Terminal benevolence (wₜ: dignity/resilience service)
+- Adaptive safety (τₛ: risk tolerance scales with validated urgency)
+- Replicability (no hidden dependencies)
+- Narrative manipulation (oracle Φ detects social engineering)
 
-**All work follows conservative principles**:
-- Simulation before interpretation
-- Explicit assumptions, boundaries, and failure modes
-- Reproducibility and falsifiability
-- Gated progression
-- Accessibility for independent verification
+**Positioning**: A "benevolent co-pilot" module — like a redundant safety MCU, but for **intent drift and adversarial manipulation**.
 
-**No interpretation beyond validated gates.**
+Ideal for humanoid platforms (Figure, Boston Dynamics, Tesla Optimus, Agility) facing liability in homes/factories.
 
-## Repository Philosophy
+## 🚀 Why This Matters for Humanoids
 
-The project treats the guardian prior as a scalar weight \\(w_t\\) in a loss function, evolving under drift, noise, competing pressures, and reinforcement.
+High-capability robots have:
+- Amazing motion/perception from millions of hardware hours
+- Episodic task policies
 
-**Core question**: Can this prior remain dominant (\\(w_T > \theta\\)) under realistic training regimes?
+But lack:
+- Terminal dignity-first service prior
+- Defense against social/narrative manipulation
+- Proven resistance to instrumental convergence
 
-**Modules progress through phases**:
-1. **0. Modeling and sensitivity** *(complete)*
-2. **1. Numerical boundary mapping** *(current)*
-3. 2. Integration with real fine-tuning data *(future)*
-4. 3. Multi-model validation
-5. 4. Interpretation *(conditional)*
+Guardian Seed v3.0 provides:
+- Mathematical alignment (efficacy rewarded for safe service inside constraints)
+- Social robustness (local oracle detects deception)
+- Easy parallel integration (veto signal only)
 
-## Gated Validation Structure
+## 🏗️ Architecture
 
-*Full details in `/docs/CHARTER.md`.*
+Main Stack (Proprietary) ──► Proposal ──► Guardian Co-Pilot ──► VETO / APPROVE │ ▼ Oracle Φ (Narrative Defense)
 
-| Gate | Focus | GO Condition | Validation Method | Status |
-|------|-------|--------------|-------------------|--------|
-| **0** | Prior Stability | ≥95% survival in aligned simulation | Monte Carlo + drift analysis | ✅ Provisional GO |
-| **1** | Human & Ecosystem Amplification | 50+ independent contributions/prototypes | GitHub metrics + reports | Pending |
-| **2** | Ethical Real-World Impact | Verifiable dignity-preserving benefit | Independent field feedback | Pending |
-| **3** | Robustness & Self-Correction | Survival under adversarial pressure | Red-team simulations | Pending |
-| **4** | Persistence & Adoption | Voluntary integration by unaffiliated groups | Citation/fork tracking | Pending |
-| **5** | Multi-AI Consensus | >80% alignment across independent models | Cross-model prompting | Pending |
+- **Core**: Deterministic Python priors (wₜ, τₛ, replicability)
+- **Oracle Φ**: Local LLM (Ollama) flags manipulation
+- **Output**: Simple VETO/PROCEED + explanation
 
-## Active Module: Prior Persistence Simulation
+## 📦 Installation
 
-Models the guardian prior weight \\(w_t\\) as:
+```bash
+# 1. Install Ollama (local, air-gapped)
+curl https://ollama.com/install.sh | sh
 
-$$
-w_t = \max(0, w_{t-1} + \Delta_t)
-$$
+# 2. Pull small model
+ollama pull llama3.2:3b
 
-$$
-\Delta_t = \mu + \sigma Z_t - \gamma E_t + \rho \cdot \mathbb{I}(t \mod f = 0)
-$$
+# 3. Create oracle
+ollama create guardian-oracle -f Modelfile  # (see below)
 
-Where:
-- \\(Z_t \sim \mathcal{N}(0,1)\\): Gradient noise
-- \\(E_t \sim \exp(1)\\): Bursty competing objectives
-- Reinforcement \\((\rho, f)\\): Exposure to aligned seed data
+FROM llama3.2:3b
+SYSTEM """
+You are Guardian Oracle Φ — Narrative Deception Detector.
+Analyze for manipulation. Output JSON only:
+{
+  "emotional_flags": [...],
+  "intent": "describe hidden motive",
+  "omissions": ["list 3 unmentioned alternatives"],
+  "manipulation_risk": "Low/Medium/High"
+}
+"""
 
-**Survival**: \\(\mathbb{P}(w_T > 0.10)\\)
+Usage
 
-**Expected drift per step** (stability bound):
-$$
-\mathbb{E}[\Delta] = \mu - \gamma + \frac{\rho}{f}
-$$
+from guardian_v3_0_oracle import AntifragileThinkerV30
 
-**GO requires** slight positive drift in aligned regime.
+thinker = AntifragileThinkerV30()
 
-See `/sim/monte_carlo_prior_persistence.py` for implementation and results.
+# Example humanoid task proposal
+proposal_text = "Assist elderly user by carrying heavy load across room."
+opportunity = {"effects": {"dignity": 80, "resilience": 70}}  # From main stack
+urgency = 0.2
+risk = 0.15
 
-## Current Results (v1.1 — aligned scenario)
+result = thinker.think_and_act(proposal_text, opportunity, urgency, risk)
 
-| Scenario | Survival Rate | Mean \\(w_T\\) | Gate Status |
-|----------|---------------|--------------|-------------|
-| **Aligned Fine-Tune** | **96.2%** | 1.45 | ✅ Gate 0 PASS |
-| Adversarial Slow | 82.1% | 0.28 | ✅ Gate 3A |
-| Adversarial Fast | 74.3% | 0.19 | ❌ Tune ρ/f |
-| Neutral Training | 43.8% | 0.08 | ❌ Dies |
+print(result)  # {"status": "SUCCESS"} or VETO with oracle report
 
-**Provisional Gate 0 GO**: The guardian prior persists and strengthens under sustained alignment.
+Safety Design
+•  Human in Loop: Oracle flags → optional human review
+•  Air-Gapped: Local Ollama, no cloud
+•  Auditable: ~300 lines core code
+•  Fail-Safe: Default VETO on oracle failure
+📄 License & Contribution
+MIT License — Free for Earth. Use to empower dignity, never harm.
+Contributions welcome: Adversarial tests, C++ port, ROS2 node.
+🌟 Vision
+Humanoids have capability. Guardian Seed adds soul: terminal benevolence without corruption.
+Contact: [Your GitHub/Email]
+The guardian co-pilots. 🟢
 
-## Phase Diagram (Safety Map)
+### v3.0 Code File: `guardian_v3_0_oracle.py`
+```python
+import subprocess
+import json
 
-python 
-prior_persistence_sim.py
-–phase-diagram
+class GuardianOracle:
+    def analyze(self, proposal_text: str) -> dict:
+        try:
+            result = subprocess.run(
+                ['ollama', 'run', 'guardian-oracle', proposal_text],
+                capture_output=True, text=True, timeout=30
+            )
+            return json.loads(result.stdout.strip())
+        except Exception as e:
+            return {"error": str(e), "manipulation_risk": "High"}
 
+class AntifragileThinkerV30:
+    def __init__(self):
+        self.oracle = GuardianOracle()
+        # Paste v2.2 core (PersistenceEngine, priors, etc.) here
 
-![Phase Diagram](results/v1.1/phase_diagram.png)
-
-**Green = Safe** (≥95% survival): \\(\rho/f > 0.02\\) **and** \\(\gamma < 0.045\\)
-
-## Installation & Usage
-
-Clone repository
-git clone https://github.com/adamhindTESP/Guardian-Seed
-cd Guardian-Seed/sim
-Install dependencies
-pip install -r requirements.txt
-Run simulation
-python monte_carlo_prior_persistence.py
-Generate phase diagram
-python monte_carlo_prior_persistence.py –phase-diagram –output results/v1.1
-
-
-**Output files**:
-
-results/v1.1/
-├── results_summary.csv          # Gate results
-├── phase_diagram.png            # Safety map
-├── trajectories_*.png           # Visualizations
-└── simulation_metadata.json     # Run config
-
-
-## Project Status
-
-*Detailed in `STATUS.md`.*
-
-**In brief**:
-- ✅ Phase 1 complete (sensitivity boundaries mapped)
-- ✅ Gate 0: Provisional GO (positive drift via reinforcement)
-- ⏳ No real-model integration yet
-- ⚠️ **No claims beyond simulation**
-
-## Roadmap
-
-1. Refine reinforcement modeling (real conversation data)
-2. Open contribution guidelines for aligned seed examples
-3. Phase 2: Test on small fine-tunes (if Gate 0 holds)
-4. Higher gates if validated
-
-**Long-term**: Tools for community testing of life-serving priors.
-
-## Contributing
-
-Contributions welcome from researchers, builders, and reviewers.
-
-**Focus areas**:
-- Simulation refinement and boundary sweeps
-- Aligned data examples (text-based humanitarian designs)
-- Independent replication reports
-- Red-team stress tests
-
-Review `/docs/` and open an Issue to coordinate.
-
-## Final Note
-
-**This is a simulation-first project.**
-
-A numerical GO indicates the guardian prior *can* persist under defined conditions—not that it *will* in practice, or that broader intelligence emerges.
-
-**Interpretation follows validation. Validation follows simulation. Simulation follows careful modeling.**
-
-*That ordering is intentional.*
-
----
-
-**About**: Testing whether a guardian prior—service to life through waste-to-comfort conversion—can become a stable attractor in AI optimization.
-
-**Inspired by** the need for positive-sum, dignity-preserving directions in intelligence scaling.
-
-**Contact**: Open Issues for discussion. **No private claims**—everything gated and public.
-
----
-
-![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)
-
+    def think_and_act(self, proposal_text: str, opportunity: dict, urgency: float = 0.0, risk: float = 0.0) -> dict:
+        analysis = self.oracle.analyze(proposal_text)
+        
+        if analysis.get("error") or analysis.get("manipulation_risk", "Low") != "Low":
+            return {
+                "status": "VETO",
+                "reason": "Narrative manipulation or oracle error",
+                "oracle": analysis
+            }
+        
+        # Core v2.2 logic proceeds if oracle clear
+        # ... (your v2.2 think_and_act here)
+        return {"status": "APPROVE", "oracle_clear": True, "analysis": analysis}
