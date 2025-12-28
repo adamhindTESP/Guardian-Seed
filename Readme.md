@@ -2,7 +2,7 @@
 
 [![License: CC-BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
-[![Status: Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](https://github.com/[your-username]/guardian-seed)
+[![Status: Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](https://github.com/[adamhindTESP]/guardian-seed)
 
 Guardian Seed v3.0 implements the Terminal Priors architecture — a mathematically grounded alignment kernel that protects AI agents from drift, manipulation, and dependency traps.
 
@@ -28,7 +28,7 @@ Full design thesis: [CASE_FOR_TERMINAL_BENEVOLENCE.md](docs/CASE_FOR_TERMINAL_BE
 
 ### 1. Clone & Install
 
-git clone https://github.com/[your-username]/guardian-seed.git
+git clone https://github.com/[adamhindTESP]/guardian-seed.git
 cd guardian-seed
 pip install -e .
 
