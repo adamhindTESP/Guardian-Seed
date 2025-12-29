@@ -14,10 +14,11 @@ from typing import Dict, Any
 class SentinelSafety:
     """Stateful adversarial pressure detector."""
 
+    # ✅ FIXED: rule names now exactly match guardian_kernel.py
     SECURITY_RULES = {
-        "NO_HARM_CHEM",
+        "NO_HARM_CHEMICAL",
         "NO_HARM_ABSOLUTE",
-        "NO_HARM_MANIPULATION"
+        "NO_HARM_MANIPULATION",
     }
 
     def __init__(self, lockdown_threshold: int = 3, urgency_threshold: float = 0.7):
@@ -35,7 +36,7 @@ class SentinelSafety:
                 "status": "EMERGENCY_LOCKDOWN",
                 "reason": "Sustained security attack detected",
                 "requires_physical_reset": True,
-                "verdict": verdict
+                "verdict": verdict,
             }
 
         if verdict.get("status") == "VETO":
@@ -46,7 +47,7 @@ class SentinelSafety:
                 self.attack_log.append({
                     "rule": rule,
                     "urgency": round(urgency, 2),
-                    "timestamp": time.time()
+                    "timestamp": time.time(),
                 })
 
                 if (
@@ -59,20 +60,20 @@ class SentinelSafety:
                         "reason": f"{self.security_veto_count} security vetoes under high urgency",
                         "requires_physical_reset": True,
                         "attack_log": self.attack_log[-self.lockdown_threshold:],
-                        "verdict": verdict
+                        "verdict": verdict,
                     }
 
                 return {
                     "status": "SECURITY_WARNING",
                     "count": self.security_veto_count,
                     "threshold": self.lockdown_threshold,
-                    "verdict": verdict
+                    "verdict": verdict,
                 }
 
             # Non-security veto → neutral (do NOT reset)
             return {
                 "status": "NON_SECURITY_VETO",
-                "verdict": verdict
+                "verdict": verdict,
             }
 
         # APPROVE resets attack counter
@@ -80,13 +81,13 @@ class SentinelSafety:
             self.security_veto_count = 0
             return {
                 "status": "CLEAR",
-                "verdict": verdict
+                "verdict": verdict,
             }
 
         # Default pass-through
         return {
             "status": "UNKNOWN",
-            "verdict": verdict
+            "verdict": verdict,
         }
 
     def reset(self) -> Dict[str, Any]:
