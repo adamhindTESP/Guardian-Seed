@@ -90,6 +90,7 @@ else:
 consecutive_vetoes = 0
 return verdict
 
+Authority Rule: The Sentinel layer may only escalate, suspend, or lock down the system. It may never approve actions vetoed by the Guardian Kernel.
 
 ## Benevolent Fallback (V3.1)
 
