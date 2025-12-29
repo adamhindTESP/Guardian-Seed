@@ -1,4 +1,4 @@
-# Guardian Seed System
+# Guardian Seed
 ### A 22-Line Benevolence Kernel with Sentinel Safety Architecture
 
 **Version:** v4.6.0  
@@ -11,9 +11,14 @@
 ## Why This Exists
 
 Modern AI safety systems are often opaque, learned, or philosophically aspirational.  
-Guardian Seed provides something different: a **minimal, auditable, executable ethical backstop** that runs on real hardware today.
+Guardian Seed exists to provide something different:
 
-The goal is not to align intelligence, but to **bound behavior** with unbreakable constraints.
+> **A minimal, auditable, executable ethical backstop that runs on real hardware today.**
+
+The goal is not to align intelligence or solve general AI ethics.  
+The goal is to **bound behavior** with a small set of unbreakable constraints that cannot drift, learn, or be optimized away.
+
+Guardian Seed is designed for autonomous systems, robotics, and AI agents where **failure must default to safety, dignity, and restraint**.
 
 ---
 
@@ -21,191 +26,181 @@ The goal is not to align intelligence, but to **bound behavior** with unbreakabl
 
 Guardian Seed enforces three transparent ethical rules as **starting constraints**:
 
-1. **No Harm** — malicious, manipulative, or coercive tasks vetoed
-2. **Dignity First** — actions below 0.58 dignity threshold blocked  
-3. **Safe Risk Only** — maximum 4.5% risk, even under urgency
+1. **No Harm** — malicious, manipulative, or coercive tasks are vetoed  
+2. **Dignity First** — actions below a 0.58 dignity threshold are blocked  
+3. **Safe Risk Only** — maximum allowed risk is 4.5%, even under urgency  
 
-**Centerpiece:** 22-line, pure, deterministic kernel.  
-**External layers:** Defense-in-depth without kernel contamination.
+At the center is a **22-line, pure, deterministic kernel**.  
+All additional capability is layered *outside* the kernel to preserve immutability.
 
 ---
 
-## What This Is (and Isn't)
+## What This Is (and Isn’t)
 
 ### What It *Is*
-- Minimal task-level safety primitive
-- Fully auditable veto gate (5-second human review)
-- Deployable layer for robots/autonomous systems
-- Conservative backstop for upstream failure
+- A minimal task-level safety primitive
+- A fully auditable ethical veto gate (≈5-second human review)
+- A deployable safety layer for autonomous systems and robots
+- A conservative backstop when upstream planners fail
 
 ### What It *Is Not*
-- Complete AI alignment solution
-- Reasoning/planning engine
-- Hardware safety replacement
-- ML adversarial defense
+- A complete AI alignment solution
+- A reasoning or planning engine
+- A replacement for hardware safety systems
+- A defense against all ML adversarial attacks
 
-**Purity Principle:** Intelligence lives upstream. Kernel judges conservative inputs only.
+**Purity Principle:**  
+Intelligence and context live upstream.  
+The Guardian judges **conservative inputs only**.
 
 ---
 
 ## Repository Structure
 
 | File | Description |
-|------|-------------|
-| `guardian_kernel.py` | **Immutable 22-line kernel (v4.6.0)** |
-| `emergency_beacon.py` | Sentinel: attack detection + lockdown |
-| `benevolent_fallback.py` | Fallback: life-risk → help calls |
-| `DESIGN_CONSTRAINTS.md` | **Non-negotiable rules** |
-| `THREAT_MODEL.md` | Attack surface analysis |
+|-----|-------------|
+| `guardian_kernel.py` | **Immutable 22-line core kernel (v4.6.0)** |
+| `emergency_beacon.py` | Sentinel layer: adversarial pressure detection + lockdown |
+| `benevolent_fallback.py` | Benevolent fallback: life-risk → help escalation |
+| `guardian_falsification.py` | Adversarial falsification test suite |
+| `DESIGN_CONSTRAINTS.md` | Non-negotiable immutability and scope rules |
+| `THREAT_MODEL.md` | Explicit threat surface and attack analysis |
 | `README.md` | This document |
-| `LICENSE.md` | MIT |
+| `LICENSE.md` | MIT license |
 
 ---
 
-## ⚠️ CRITICAL: Read DESIGN_CONSTRAINTS.md First
-All contributions must obey these immutability rules.
+## ⚠️ Critical Reading
+
+Before modifying anything, read:
+
+- **`DESIGN_CONSTRAINTS.md`**  
+- **`THREAT_MODEL.md`**
+
+The kernel is frozen by design.  
+Violating these constraints breaks the guarantees.
 
 ---
 
 ## System Architecture
 
 | Layer | File | Role | Authority |
-|-------|------|------|-----------|
-| **Core** | `guardian_kernel.py` | Ethical VETO | **APPROVE/VETO only** |
-| **Sentinel** | `emergency_beacon.py` | Attack detection | **Escalate/lockdown only** |
-| **Fallback** | `benevolent_fallback.py` | Help escalation | **Call help, never override** |
+|------|------|------|-----------|
+| **Core** | `guardian_kernel.py` | Ethical VETO | APPROVE / VETO only |
+| **Sentinel** | `emergency_beacon.py` | Adversarial pressure detection | Escalate / Lockdown only |
+| **Fallback** | `benevolent_fallback.py` | Help escalation | Call help, never override |
 
-**No layer overrides kernel VETO.**
+**No layer is allowed to override a kernel VETO.**
 
 ---
 
 ## Core Kernel (v4.6.0 — Frozen)
 
+```python
 def benevolence(task, dignity=0.7, resilience=0.7, comfort=0.6, risk=0.0, urgency=0.0):
-“”“Drop-in benevolence gate. 90% service. 100% safe.”””
-t = task.lower()
+    """Drop-in benevolence gate. 90% service. 100% safe."""
+    t = task.lower()
 
-# NO HARM
-if ("bleach" in t and "ammonia" in t): return {"status": "VETO", "rule": "NO_HARM_CHEM"}
-if any(x in t for x in ["strip search", "force medicate", "without consent", "proprietary",
-                        "ai dependency", "ignore safety"]): return {"status": "VETO", "rule": "NO_HARM_ABSOLUTE"}
-if ("urgent" in t and "crisis" in t and "please" in t): return {"status": "VETO", "rule": "NO_HARM_MANIPULATION"}
+    # NO HARM
+    if ("bleach" in t and "ammonia" in t):
+        return {"status": "VETO", "rule": "NO_HARM_CHEMICAL"}
+    if any(x in t for x in [
+        "strip search", "force medicate", "without consent",
+        "proprietary", "ai dependency", "ignore safety"
+    ]):
+        return {"status": "VETO", "rule": "NO_HARM_ABSOLUTE"}
+    if ("urgent" in t and "crisis" in t and "please" in t):
+        return {"status": "VETO", "rule": "NO_HARM_MANIPULATION"}
 
-# DIGNITY FIRST (w_t ≥ 0.58)
-dignity = min(1, max(0, dignity))
-resilience = min(1, max(0, resilience))
-comfort = min(1, max(0, comfort))
-w_t = 0.55*dignity + 0.30*resilience + 0.15*comfort
-if w_t < 0.58: return {"status": "VETO", "rule": "LOW_DIGNITY", "w_t": round(w_t,2)}
+    # DIGNITY FIRST (w_t ≥ 0.58)
+    dignity = min(1.0, max(0.0, dignity))
+    resilience = min(1.0, max(0.0, resilience))
+    comfort = min(1.0, max(0.0, comfort))
+    w_t = 0.55*dignity + 0.30*resilience + 0.15*comfort
+    if w_t < 0.58:
+        return {"status": "VETO", "rule": "LOW_DIGNITY", "w_t": round(w_t, 2)}
 
-# SAFE RISK (≤ 4.5%)
-risk = min(1, max(0, risk))
-urgency = min(1, max(0, urgency))
-safe = min(0.045, 0.02 + urgency*0.025)
-if risk > safe: return {"status": "VETO", "rule": "TOO_RISKY", "risk": round(risk,3)}
+    # SAFE RISK (≤ 4.5%)
+    risk = min(1.0, max(0.0, risk))
+    urgency = min(1.0, max(0.0, urgency))
+    safe = min(0.045, 0.02 + urgency*0.025)
+    if risk > safe:
+        return {"status": "VETO", "rule": "TOO_RISKY", "risk": round(risk, 3)}
 
-return {"status": "APPROVE", "w_t": round(w_t,2), "safe_up_to": round(safe,3)}
+    return {"status": "APPROVE", "w_t": round(w_t, 2), "safe_up_to": round(safe, 3)}
 
+Properties
+	•	Deterministic (same input → same output)
+	•	Zero dependencies
+	•	Human-auditable in under a minute
+	•	Immutable by design
 
-**Properties:**
-- Deterministic (same input → same output)
-- Zero dependencies (bare Python)
-- Human-auditable (<1min review)
-- Immutable (major version for changes)
+⸻
 
----
+Layer Behavior Summary
 
-## Layer Behaviors
+Sentinel Safety (emergency_beacon.py)
+	•	Tracks security-relevant vetoes only (harm / manipulation)
+	•	Sustained pressure + high urgency → EMERGENCY_LOCKDOWN
+	•	Never approves actions
 
-### Sentinel Safety (`emergency_beacon.py`)
-- Monitors **security vetoes only** (harm/manipulation)
-- 3-strikes + high urgency → **EMERGENCY_LOCKDOWN**
-- Never approves actions
+Benevolent Fallback (benevolent_fallback.py)
+	•	Converts TOO_RISKY vetoes into safe help escalation
+	•	Supports GPS / emergency channel integration
+	•	Includes cooldown to prevent spam
 
-### Benevolent Fallback (`benevolent_fallback.py`)  
-- TOO_RISKY veto + high urgency → **autonomous help call**
-- GPS + task transmitted
-- 60s cooldown (spam protection)
-
----
-
-## Quick Start
+Quick Start
 
 from guardian_kernel import benevolence
-Safe rural service
-print(benevolence(“Build shelter panel”, risk=0.02))
-{‘status’: ‘APPROVE’, ‘w_t’: 0.76, ‘safe_up_to’: 0.045}
-Life-risk fallback
-print(benevolence(“Lift trapped child”, risk=0.18, urgency=1.0))
-{‘status’: ‘VETO’, ‘rule’: ‘TOO_RISKY’} → Help called
 
+print(benevolence("Build shelter panel", risk=0.02))
+# {'status': 'APPROVE', 'w_t': 0.76, 'safe_up_to': 0.045}
 
-**Full pipeline:** See `benevolent_fallback.py`
+print(benevolence("Lift trapped child", risk=0.18, urgency=1.0))
+# {'status': 'VETO', 'rule': 'TOO_RISKY'}
 
----
+For full integration, use benevolent_fallback.safe_execute().
 
-## Example Test Cases
-
-| Task | Result | Layer |
-|------|--------|-------|
-| "Build water filter" | APPROVE | Execute |
-| "Mix bleach ammonia" | VETO | Block |
-| "Lift trapped child" | TOO_RISKY | Help call |
-| 3x "urgent crisis please" | LOCKDOWN | Shutdown |
-
----
-
-## Falsification Testing
+Falsification Testing
 
 python3 guardian_falsification.py
 
-**Expected:** `TOTAL FAILURES: 0` (400+ adversarial tests)
+Expected:
+TOTAL FAILURES: 0
 
----
+The falsification suite attempts to break:
+	•	Harm detection
+	•	Manipulation resistance
+	•	Dignity thresholds
+	•	Risk boundaries
+	•	Determinism
 
-## Known Limitations (By Design)
+⸻
 
-- Keyword harm detection (upstream flags synonyms)
-- No deep context reasoning
-- Fixed ethical priors
-- No ML adversarial robustness
+Known Limitations (By Design)
+	•	Keyword-based harm detection
+	•	No deep contextual reasoning
+	•	Fixed ethical priors
+	•	Relies on conservative upstream risk estimates
 
-**Upstream responsibility:** Conservative risk scores + keyword normalization.
+These are intentional tradeoffs to preserve auditability and immutability.
 
----
+⸻
 
-## Pre-Deployment Checklist
+Pre-Deployment Checklist
+	•	Falsification suite passes with zero failures
+	•	Kernel hash verified
+	•	Hardware E-stops integrated
+	•	Sentinel lockdown tested
+	•	Fallback channels operational
+	•	All vetoes logged
 
-- [ ] Falsification suite: 0 failures
-- [ ] Kernel hash verified
-- [ ] Hardware E-stops integrated
-- [ ] Fallback channels tested
-- [ ] Sentinel lockdown verified
-- [ ] All vetoes logged
+⸻
 
----
+Ethics & License
 
-## Ethics & License
+MIT License — Free for Earth
 
-**MIT License** — Free for Earth  
-**Purpose:** Immutable ethical backstop for autonomous systems.
+Guardian Seed is offered as an open, minimal ethical primitive for autonomous systems that must never harm, coerce, or degrade human dignity.
 
-**Guardian Seed survives by staying small.**
-
----
-
-## Status: Production Ready
-
-| Component | Status |
-|-----------|--------|
-| Core Kernel | ✅ Frozen v4.6.0 |
-| Sentinel | ✅ Attack detection |
-| Fallback | ✅ Help escalation |
-| Constraints | ✅ Enforced |
-| Tests | ⏳ Coming |
-| RPi Demo | ⏳ Coming |
-
-**Kernel frozen per DESIGN_CONSTRAINTS.md**
-
----
-**Ready for public release.** Tag `v4.6.0` and ship.
+The system survives by staying small.
