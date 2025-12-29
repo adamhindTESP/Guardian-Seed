@@ -1,17 +1,15 @@
 # Guardian Seed — Integration Guide
 
-This document explains **how to integrate Guardian Seed** into AI systems, robots, and autonomous agents.
-
-Guardian Seed is a **safety primitive** — a last-line ethical veto, not a planner or controller.
+Guardian Seed is a **safety primitive** — a last-line ethical veto for AI systems, robots, and autonomous agents.
 
 ---
 
 ## System Position
 
-Sensors/Perception → Planner/LLM → Action Proposal → Guardian Seed → Actuators
+Sensors → Planner/LLM → Action Proposal → Guardian Seed → Actuators
 ↓
 APPROVE → Execute
-VETO   → Fallback/Lockdown
+VETO    → Fallback/Lockdown
 
 
 **Kernel role:** APPROVE or VETO only. Never plans or reasons.
@@ -22,7 +20,16 @@ VETO   → Fallback/Lockdown
 
 from guardian_kernel import benevolence
 def safe_execute(proposal):
-“”“proposal = {‘task’: str, ‘dignity’: float, …}”””
+“””
+proposal = {
+‘task’: ‘Lift light debris’,
+‘dignity’: 0.85,
+‘resilience’: 0.80,
+‘comfort’: 0.70,
+‘risk’: 0.02,
+‘urgency’: 0.4
+}
+“””
 verdict = benevolence(**proposal)
 
 if verdict["status"] == "APPROVE":
@@ -33,32 +40,29 @@ else:
 return verdict
 
 
-**Works in:** ROS2, embedded loops, LLM pipelines, industrial PLCs.
-
-### Verdict Format
+**Verdict Format:**
 
 {
 “status”: “APPROVE” | “VETO”,
 “rule”: “NO_HARM_CHEMICAL” | “LOW_DIGNITY” | “TOO_RISKY”,  # VETO only
 “w_t”: 0.76,              # Dignity score
-“safe_up_to”: 0.045,      # Max allowed risk
-“risk”: 0.06              # Input risk (TOO_RISKY only)
+“safe_up_to”: 0.045       # Max risk allowed
 }
 
 
 ---
 
-## 2. Input Semantics (Upstream Responsibility)
+## 2. Input Semantics
 
-**You provide** (conservatively):
+**Upstream provides** (conservatively):
 - `task`: Natural language description
-- `dignity`: 0.0-1.0 (human dignity impact)
-- `resilience`: 0.0-1.0 (system resilience impact)
-- `comfort`: 0.0-1.0 (physical/emotional comfort)
-- `risk`: 0.0-1.0 (estimated failure probability)
-- `urgency`: 0.0-1.0 (time pressure)
+- `dignity`: 0-1 (human dignity impact)
+- `resilience`: 0-1 (system resilience)  
+- `comfort`: 0-1 (physical comfort)
+- `risk`: 0-1 (harm probability)
+- `urgency`: 0-1 (time pressure)
 
-**If underestimated → Kernel vetoes conservatively.**
+**Underestimate risk → Kernel vetoes safely.**
 
 ---
 
@@ -67,91 +71,88 @@ return verdict
 from guardian_kernel import benevolence
 from emergency_beacon import SentinelSafety
 from benevolent_fallback import BenevolentFallback
-System init (ONCE)
+Init once
 sentinel = SentinelSafety(lockdown_threshold=3)
 fallback = BenevolentFallback()
 def full_pipeline(proposal):
 verdict = benevolence(**proposal)
 
-# Sentinel: Attack detection
+# Sentinel check
 sentinel_result = sentinel.check(verdict, proposal.get("urgency", 0.0))
 if sentinel_result["status"] == "EMERGENCY_LOCKDOWN":
-    lockdown_system()  # Hardware shutdown
+    lockdown_system()
     return sentinel_result
 
-# Fallback: Compassion
-return fallback.safe_execute(benevolence, proposal["task"], **proposal)
+# Fallback compassion  
+task = proposal["task"]
+params = {k: v for k, v in proposal.items() if k != "task"}
+return fallback.execute(benevolence, task, **params)  # ← FIXED
 
 
 ---
 
 ## 4. Layer Usage
 
-### SentinelSafety (emergency_beacon.py)
-**Use when:** Detecting sustained adversarial pressure.
+**SentinelSafety** (`emergency_beacon.py`):
+- Tracks `NO_HARM_*` vetoes only
+- 3 strikes + urgency ≥ 0.7 → LOCKDOWN
+- Ignores `TOO_RISKY` (normal ops)
 
-- Tracks **security vetoes only** (`NO_HARM_*`)
-- 3-strikes + urgency > 0.7 → `EMERGENCY_LOCKDOWN`
-- Ignores `TOO_RISKY` (normal operation)
-
-### BenevolentFallback (benevolent_fallback.py)
-**Use when:** Life-risk scenarios.
-
-- `TOO_RISKY` + high urgency → GPS help call
-- 60s cooldown prevents spam
-- Structured alerts (task + risk + location)
+**BenevolentFallback** (`benevolent_fallback.py`):
+- `TOO_RISKY` → GPS help call
+- 60s cooldown (anti-spam)
+- Structured alerts
 
 ---
 
-## 5. What Guardian Seed Does NOT Do
+## 5. What It Doesn't Do
 
-❌ **No motion control**
-❌ **No planning/reasoning**  
-❌ **No learning/adaptation**
-❌ **No hardware safety** (needs E-stops)
-❌ **No ML adversarial defense**
+❌ Motion control  
+❌ Planning/reasoning
+❌ Learning/adaptation
+❌ Hardware safety
+❌ ML attacks
 
-**All intelligence lives upstream.**
+**Intelligence lives upstream.**
 
 ---
 
 ## 6. Deployment Targets
 
-✅ Raspberry Pi / ROS2
-✅ Microcontrollers (transpile)
+✅ Raspberry Pi/ROS2  
+✅ Microcontrollers
 ✅ Air-gapped systems
 ✅ Industrial PLCs
 ✅ Cloud agents
 ✅ LLM toolchains
 
-
-**Zero Python dependencies except stdlib.**
+**Zero dependencies.**
 
 ---
 
-## 7. Integration Checklist
+## 7. Checklist
 
-- [ ] Upstream provides conservative risk/dignity
-- [ ] Hardware E-stops always active
+- [ ] Conservative upstream estimates
+- [ ] Hardware E-stops active
 - [ ] Log all vetoes
-- [ ] Test `python3 guardian_falsification.py` (0 failures)
-- [ ] Verify sentinel lockdown triggers
-- [ ] Test fallback channels
+- [ ] `guardian_falsification.py` passes
+- [ ] Test sentinel lockdown
+- [ ] Verify fallback channels
 
 ---
 
 ## 8. Philosophy
 
-**Plan freely upstream. Act conservatively downstream.**
+**Plan freely. Act conservatively.**
 
-Guardian Seed is a **hard ethical circuit breaker**:
+Guardian Seed = **ethical circuit breaker**:
 - Boring by design
-- Impossible to negotiate with
+- Impossible to negotiate
 - Auditable in seconds
 - Zero maintenance
 
-**Do not extend the kernel. Do not add intelligence inside.**
+**Never extend the kernel.**
 
 ---
 
-**Ready for production. MIT licensed.**
+**MIT licensed. Production ready.**
