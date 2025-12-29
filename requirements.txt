@@ -1,5 +1,0 @@
-# Core dependencies for Guardian Seed v3.0
-
-fastapi==0.104.1
-uvicorn[standard]==0.24.0.post1
-requests==2.31.0
