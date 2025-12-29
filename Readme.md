@@ -78,7 +78,7 @@ Audit time: <5s human verification
 
 Detects sustained adversarial pressure:
 
-Tracks consecutive VETOes across sessions
+Tracks consecutive VETOes within bounded operational window.
 consecutive_vetoes = 0
 def sentinel_check(verdict, urgency):
 global consecutive_vetoes
