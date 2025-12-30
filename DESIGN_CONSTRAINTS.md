@@ -58,10 +58,10 @@ The kernel The kernel (guardian_kernel.py) must:
 - Run on bare Python
 
 This guarantees deployability on:
-- Raspberry Pi
-- Microcontrollers (via transpilation)
+- Raspberry Pi / SBCs
+- Microcontrollers (via transpilation or code generation, *not native Python*)
 - Air-gapped systems
-- Safety-critical environments
+- Safety-critical environments (*as a supervisory software layer, not a real-time controller*)
 
 ---
 
