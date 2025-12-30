@@ -43,8 +43,9 @@ def safe_execute(proposal):
 
     return verdict
 
-Verdict Format
+**Verdict Format:**
 
+```json
 {
   "status": "APPROVE" | "VETO",
   "rule": "NO_HARM_CHEMICAL" | "LOW_DIGNITY" | "TOO_RISKY",
