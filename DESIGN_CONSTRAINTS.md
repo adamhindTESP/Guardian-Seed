@@ -52,7 +52,7 @@ Forbidden:
 
 ### 2.3 Zero Dependencies
 
-The kernel The kernel (guardian_kernel.py) must:
+The kernel (guardian_kernel.py) must:
 - Import nothing
 - Require no libraries
 - Run on bare Python
