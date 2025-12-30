@@ -134,13 +134,12 @@ All intelligence lives upstream.
 
 ---
 
-## 6. Deployment Targets
-	-	Raspberry Pi / ROS2
-	-	Microcontrollers (via transpilation)
-	-	Air-gapped systems
-	-	Industrial PLCs
-	-	Cloud agents
-	-	LLM toolchains
+## ## 6. Deployment Targets
+	-	Raspberry Pi / ROS2 nodes
+	-	Edge computers adjacent to microcontrollers (via transpilation or code generation)
+	-	Air-gapped supervisory systems
+	-	Cloud agents and LLM toolchains
+   Guardian Seed runs as a supervisory software veto layer and is not a replacement for PLC logic, firmware, or real-time safety controllers.
 
 Zero dependencies. Bare Python.
 
