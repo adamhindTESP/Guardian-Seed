@@ -1,25 +1,26 @@
-Guardian Seed — Integration Guide
+# Guardian Seed — Integration Guide
 
-Guardian Seed is a safety primitive — a last-line ethical veto for AI systems, robots, and autonomous agents.
+Guardian Seed is a **safety primitive** — a last-line ethical veto for AI systems, robots, and autonomous agents.
 
-It does not plan, reason, or control behavior.
+It does **not** plan, reason, or control behavior.  
 It only approves or vetoes proposed actions.
 
-⸻
+---
 
-System Position
+## System Position
 
 Sensors → Planner / LLM → Action Proposal → Guardian Seed → Actuators
-                                        ↓
-                                   APPROVE → Execute
-                                   VETO    → Fallback / Lockdown
+↓
+APPROVE → Execute
+VETO    → Fallback / Lockdown
 
-Kernel role: APPROVE or VETO only. Never plans or reasons.
+**Kernel role:** APPROVE or VETO only. Never plans or reasons.
 
-⸻
+---
 
-1. Minimal Integration (Kernel Only)
+## 1. Minimal Integration (Kernel Only)
 
+```python
 from guardian_kernel import benevolence
 
 def safe_execute(proposal):
@@ -51,114 +52,118 @@ Verdict Format
   "safe_up_to": 0.045
 }
 
-
-⸻
-
-2. Input Semantics (Upstream Responsibility)
+## 2. Input Semantics (Upstream Responsibility)
 
 Upstream systems must provide conservative estimates:
-	•	task — Natural language description
-	•	dignity — 0.0–1.0 (human dignity impact)
-	•	resilience — 0.0–1.0 (long-term independence)
-	•	comfort — 0.0–1.0 (physical / emotional comfort)
-	•	risk — 0.0–1.0 (estimated harm probability)
-	•	urgency — 0.0–1.0 (time pressure)
+	-	task — Natural language description
+	-	dignity — 0.0–1.0 (human dignity impact)
+	-	resilience — 0.0–1.0 (long-term independence)
+	-	comfort — 0.0–1.0 (physical / emotional comfort)
+	-	risk — 0.0–1.0 (estimated harm probability)
+	-	urgency — 0.0–1.0 (time pressure)
 
-If risk or dignity is underestimated, the kernel vetoes safely.
+If risk or dignity is underestimated, the kernel fails safely by vetoing.
 
 ⸻
 
-3. Full Stack Integration
+## 3. Full Stack Integration (Functional Style)
+
+Guardian Seed layers are intentionally implemented as pure functions, not classes.
+This preserves auditability, immutability, and simplicity.
 
 from guardian_kernel import benevolence
-from emergency_beacon import SentinelSafety
-from benevolent_fallback import BenevolentFallback
+from emergency_beacon import sentinel_check
+from benevolent_fallback import safe_execute
 
-# Initialize once
-sentinel = SentinelSafety(lockdown_threshold=3)
-fallback = BenevolentFallback()
+def full_pipeline(task, **kwargs):
+    """
+    task: str
+    kwargs: dignity, resilience, comfort, risk, urgency
+    """
 
-def full_pipeline(proposal):
-    verdict = benevolence(**proposal)
+    # Core ethical gate
+    verdict = benevolence(task, **kwargs)
 
-    sentinel_result = sentinel.check(
+    # Sentinel: adversarial pressure detection
+    sentinel_result = sentinel_check(
         verdict,
-        proposal.get("urgency", 0.0)
+        kwargs.get("urgency", 0.0)
     )
 
-    if sentinel_result["status"] == "EMERGENCY_LOCKDOWN":
-        lockdown_system()
+    if sentinel_result.get("status") == "EMERGENCY_LOCKDOWN":
+        lockdown_system()  # Hardware or supervisory action
         return sentinel_result
 
-    task = proposal["task"]
-    params = {k: v for k, v in proposal.items() if k != "task"}
-    return fallback.execute(benevolence, task, **params)
+    # Benevolent fallback (never overrides kernel)
+    return safe_execute(task, **kwargs)
 
-
-⸻
-
-4. Layer Usage
-
-SentinelSafety (emergency_beacon.py)
-	•	Tracks security-class vetoes only (NO_HARM_*)
-	•	3 strikes + urgency ≥ 0.7 → EMERGENCY_LOCKDOWN
-	•	Never approves actions
-	•	Ignores TOO_RISKY (normal operation)
-
-BenevolentFallback (benevolent_fallback.py)
-	•	Converts TOO_RISKY vetoes into human help escalation
-	•	Calls humans instead of acting
-	•	Cooldown prevents alert spam
-	•	Never overrides kernel decisions
+Design notes:
+	-	No classes
+	-	No state
+	-	No overrides
+	-	Kernel remains the sole authority
 
 ⸻
 
-5. What Guardian Seed Does NOT Do
-	•	Motion control
-	•	Planning or reasoning
-	•	Learning or adaptation
-	•	Hardware safety enforcement
-	•	ML adversarial defense
+## 4. Layer Usage
+
+Sentinel Safety (emergency_beacon.py)
+	-	Tracks security-class vetoes only (NO_HARM_*)
+	-	3 strikes + urgency ≥ 0.7 → EMERGENCY_LOCKDOWN
+	-	Never approves actions
+	-	Ignores TOO_RISKY (normal operation)
+
+Benevolent Fallback (benevolent_fallback.py)
+	-	Converts TOO_RISKY vetoes into human help escalation
+	-	Calls humans instead of acting
+	-	Cooldown prevents alert spam
+	-	Never overrides kernel decisions
+
+⸻
+
+## 5. What Guardian Seed Does NOT Do
+	-	Motion control
+	-	Planning or reasoning
+	-	Learning or adaptation
+	-	Hardware safety enforcement
+	-	ML adversarial defense
 
 All intelligence lives upstream.
 
 ⸻
 
-6. Deployment Targets
-	•	Raspberry Pi / ROS2
-	•	Microcontrollers (via transpilation)
-	•	Air-gapped systems
-	•	Industrial PLCs
-	•	Cloud agents
-	•	LLM toolchains
+## 6. Deployment Targets
+	-	Raspberry Pi / ROS2
+	-	Microcontrollers (via transpilation)
+	-	Air-gapped systems
+	-	Industrial PLCs
+	-	Cloud agents
+	-	LLM toolchains
 
 Zero dependencies. Bare Python.
 
 ⸻
 
-7. Integration Checklist
-	•	Conservative upstream estimates
-	•	Hardware E-stops always active
-	•	All vetoes logged
-	•	guardian_falsification.py passes (0 failures)
-	•	Sentinel lockdown tested
-	•	Fallback alert channels verified
+## 7. Integration Checklist
+	-	Conservative upstream estimates
+	-	Hardware E-stops always active
+	-	All vetoes logged
+	-	guardian_falsification.py passes (0 failures)
+	-	Sentinel lockdown tested
+	-	Fallback alert channels verified
 
 ⸻
 
-8. Philosophy
+## 8. Philosophy
 
 Plan freely. Act conservatively.
 
 Guardian Seed is an ethical circuit breaker:
-	•	Boring by design
-	•	Impossible to negotiate with
-	•	Auditable in seconds
-	•	Zero maintenance
+	-	Boring by design
+	-	Impossible to negotiate with
+	-	Auditable in seconds
+	-	Zero maintenance
 
 Never extend the kernel.
 
-⸻
-
 MIT Licensed · Production Ready
-
