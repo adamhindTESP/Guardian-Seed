@@ -100,11 +100,11 @@ def full_pipeline(task, **kwargs):
 ```
 
 Design notes:
-	-	No classes
-	-	No state
-	-	No overrides
-	-	Kernel remains the sole authority
-
+	-	Kernel is pure, stateless, and immutable
+	-	Sentinel and Fallback are stateful by necessity
+	-	No external layer overrides a kernel VETO
+	-	Kernel remains the sole ethical authority
+	
 ⸻
 
 ## 4. Layer Usage
