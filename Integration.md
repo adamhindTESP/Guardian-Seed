@@ -98,6 +98,7 @@ def full_pipeline(task, **kwargs):
 
     # Benevolent fallback (never overrides kernel)
     return safe_execute(task, **kwargs)
+```
 
 Design notes:
 	-	No classes
