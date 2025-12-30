@@ -13,7 +13,7 @@
 Modern AI safety systems are often opaque, learned, or philosophically aspirational.  
 Guardian Seed exists to provide something different:
 
-> **A minimal, auditable, executable ethical backstop that runs on real hardware today.**
+> **A minimal, auditable, executable ethical backstop for research, experimental, and open autonomous systems, designed to run alongside real hardware controllers today.**
 
 The goal is not to align intelligence or solve general AI ethics.  
 The goal is to **bound behavior** with a small set of unbreakable constraints that cannot drift, learn, or be optimized away.
@@ -40,7 +40,7 @@ All additional capability is layered *outside* the kernel to preserve immutabili
 ### What It *Is*
 - A minimal task-level safety primitive
 - A fully auditable ethical veto gate (≈5-second human review)
-- A deployable safety layer for autonomous systems and robots
+- A deployable software veto layer for autonomous systems and robots at the task / action-proposal level
 - A conservative backstop when upstream planners fail
 
 ### What It *Is Not*
@@ -48,6 +48,8 @@ All additional capability is layered *outside* the kernel to preserve immutabili
 - A reasoning or planning engine
 - A replacement for hardware safety systems
 - A defense against all ML adversarial attacks
+- A certified industrial safety controller
+- A replacement for PLC logic, firmware limits, or force/velocity interlocks
 
 **Purity Principle:**  
 Intelligence and context live upstream.  
