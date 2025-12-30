@@ -121,7 +121,7 @@ Benevolent Fallback (benevolent_fallback.py)
 	-	Cooldown prevents alert spam
 	-	Never overrides kernel decisions
 
-⸻
+---
 
 ## 5. What Guardian Seed Does NOT Do
 	-	Motion control
@@ -132,7 +132,7 @@ Benevolent Fallback (benevolent_fallback.py)
 
 All intelligence lives upstream.
 
-⸻
+---
 
 ## 6. Deployment Targets
 	-	Raspberry Pi / ROS2
@@ -144,7 +144,7 @@ All intelligence lives upstream.
 
 Zero dependencies. Bare Python.
 
-⸻
+---
 
 ## 7. Integration Checklist
 	-	Conservative upstream estimates
@@ -154,7 +154,7 @@ Zero dependencies. Bare Python.
 	-	Sentinel lockdown tested
 	-	Fallback alert channels verified
 
-⸻
+---
 
 ## 8. Philosophy
 
