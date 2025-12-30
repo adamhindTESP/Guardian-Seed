@@ -72,6 +72,7 @@ If risk or dignity is underestimated, the kernel fails safely by vetoing.
 Guardian Seed layers are intentionally implemented as pure functions, not classes.
 This preserves auditability, immutability, and simplicity.
 
+```python
 from guardian_kernel import benevolence
 from emergency_beacon import sentinel_check
 from benevolent_fallback import safe_execute
