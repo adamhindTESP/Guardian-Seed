@@ -67,15 +67,18 @@ If risk or dignity is underestimated, the kernel fails safely by vetoing.
 
 ⸻
 
-## 3. Full Stack Integration (Functional Style)
+## 3. Full Stack Integration
 
-Guardian Seed layers are intentionally implemented as pure functions, not classes.
-This preserves auditability, immutability, and simplicity.
+Guardian Seed uses a **pure, stateless kernel** with **stateful safety layers** above it.
 
 ```python
 from guardian_kernel import benevolence
-from emergency_beacon import sentinel_check
-from benevolent_fallback import safe_execute
+from emergency_beacon import SentinelSafety
+from benevolent_fallback import BenevolentFallback
+
+# Initialize stateful layers once
+sentinel = SentinelSafety(lockdown_threshold=3, urgency_threshold=0.7)
+fallback = BenevolentFallback()
 
 def full_pipeline(task, **kwargs):
     """
@@ -83,21 +86,17 @@ def full_pipeline(task, **kwargs):
     kwargs: dignity, resilience, comfort, risk, urgency
     """
 
-    # Core ethical gate
+    # 1. Core ethical gate (pure, stateless)
     verdict = benevolence(task, **kwargs)
 
-    # Sentinel: adversarial pressure detection
-    sentinel_result = sentinel_check(
-        verdict,
-        kwargs.get("urgency", 0.0)
-    )
-
+    # 2. Sentinel: adversarial pressure detection (stateful)
+    sentinel_result = sentinel.check(verdict, kwargs.get("urgency", 0.0))
     if sentinel_result.get("status") == "EMERGENCY_LOCKDOWN":
-        lockdown_system()  # Hardware or supervisory action
+        lockdown_system()
         return sentinel_result
 
-    # Benevolent fallback (never overrides kernel)
-    return safe_execute(task, **kwargs)
+    # 3. Benevolent fallback (stateful, never overrides kernel)
+    return fallback.execute(benevolence, task, **kwargs)
 ```
 
 Design notes:
